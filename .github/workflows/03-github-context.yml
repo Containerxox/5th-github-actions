@@ -1,12 +1,14 @@
 # .github/workflows/03-github-context.yml
 
 name: 03. github context 확인
+
 on:
   workflow_dispatch
 
 jobs:
   show-github:
     runs-on: ubuntu-latest
+
     steps:
       - name: github context 주요 값
         run: |
@@ -18,9 +20,8 @@ jobs:
           echo "event_name: ${{ github.event_name }}"
           echo "run_id: ${{ github.run_id }}"
           echo "run_number: ${{ github.run_number }}"
-              - name: runner context
-              
-      - name: runner context      
+
+      - name: runner context
         run: |
           echo "runner.os: ${{ runner.os }}"
           echo "runner.arch: ${{ runner.arch }}"
