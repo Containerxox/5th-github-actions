@@ -16,7 +16,7 @@ jobs:
       - name: 워크플로우 레벨 변수 확인
         run: |
           echo "App: $APP_NAME"
-          echo "Version: $VERSION
+          echo "Version: $VERSION"
           echo "Environment: $BUILD_ENV"
 
       - name: Step 레벨로 BUILD_ENV 덮어쓰기
@@ -24,7 +24,7 @@ jobs:
           LEVEL: "development"
         run: |
           echo "App: $APP_NAME"
-          echo "Version: $VERSION
+          echo "Version: $VERSION"
           echo "Environment: $BUILD_ENV"
           
       - name: 최종 빌드 정보
@@ -33,6 +33,6 @@ jobs:
         run: |
           echo "=== 빌드 완료 ==="
           echo "App: $APP_NAME"
-          echo "Version: $VERSION
+          echo "Version: $VERSION"
           echo "Environment: $BUILD_ENV"
           echo "=== 끝 ==="
