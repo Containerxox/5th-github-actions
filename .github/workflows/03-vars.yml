@@ -8,6 +8,14 @@ jobs:
   use-vars:
     runs-on: ubuntu-latest
     steps:
-      - name: vars 출력
+      - name: Repository var 출력
         run: |
           echo "App Name: ${{ vars.APP_NAME }}"
+  
+  deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Environment vars 출력
+        run: |
+          echo "URL: ${{ vars.API_URL }}"
