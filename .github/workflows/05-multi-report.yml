@@ -1,6 +1,7 @@
 name: Multi Report Collector
+
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   unit-test:
@@ -16,7 +17,7 @@ jobs:
         with:
           name: unit-report-${{ github.run_number }}
           path: reports/unit/
-
+          retention-days: 3
 
   integration-test:
     runs-on: ubuntu-latest
@@ -24,16 +25,19 @@ jobs:
       - name: step 01
         run: |
           mkdir -p reports/integration/
-          echo "통합 테스트 통과 3/3, 실행 번호: ${{ github.run_number }}" > reports/unit/result.txt
+          echo "통합 테스트 통과 3/3, 실행 번호: ${{ github.run_number }}" > reports/integration/result.txt
 
       - name: step 02 (Artifact 업로드)
         uses: actions/upload-artifact@v4
         with:
           name: integration-report-${{ github.run_number }}
           path: reports/integration/
-          retention-days: 3 
+          retention-days: 3
 
   summary:
+    needs:
+      - unit-test
+      - integration-test
     runs-on: ubuntu-latest
     steps:
       - name: step 01 (단위 테스트 리포트 다운로드)
@@ -43,11 +47,11 @@ jobs:
           path: ./unit
 
       - name: step 02 (통합 테스트 리포트 다운로드)
-        uses: actions/upload-artifact@v4
+        uses: actions/download-artifact@v4
         with:
           name: integration-report-${{ github.run_number }}
           path: ./integration
-    
+
       - name: step 03 (종합 출력)
         run: |
           echo "=== 종합 테스트 리포트 ==="
@@ -56,42 +60,3 @@ jobs:
           echo "=== 통합 테스트 ==="
           cat ./integration/result.txt
           echo "=== 끝 ==="
-       
-
-
-
-
-
-
-
-
-      - name: 아티팩트 이름 설정
-        id: set-name
-        run: echo "value=app-build-${{ github.run_number }}" >> $GITHUB_OUTPUT
-
-      - name: 업로드
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.set-name.outputs.value }}
-          path: target/
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: 배포 정보 출력
-        run: |
-          echo "다운로드할 아티팩트: ${{ needs.build.outputs.artifact_name }}"
-
-      - name: 다운로드
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.build.outputs.artifact_name }}
-          path: ./deploy
-
-      - name: 배포 시뮬레이션
-        run: |
-          echo "=== 배포 ==="
-          ls -al ./deploy
-          cat ./deploy/app.jar
-          echo "=== 배포 완료 ==="
