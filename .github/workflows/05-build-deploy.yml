@@ -1,0 +1,48 @@
+# .github/workflows/05-build-deploy.yml
+
+name: 05. 빌드 → 배포 시뮬레이션
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.set-name.outputs.value }}
+    steps:
+      - name: 빌드 결과 생성
+        run: |
+          mkdir target
+          echo "JAR 파일 시뮬레이션" > target/app.jar
+          echo "빌드 시간: $(date)" >> target/app.jar
+
+      - name: 아티팩트 이름 설정
+        id: set-name
+        run: echo "value=app-build-${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.set-name.outputs.value }}
+          path: target/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 배포 정보 출력
+        run: |
+          echo "다운로드할 아티팩트: ${{ needs.build.outputs.artifact_name }}"
+
+      - name: 다운로드
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+          path: ./deploy
+
+      - name: 배포 시뮬레이션
+        run: |
+          echo "=== 배포 ==="
+          ls -al ./deploy
+          cat ./deploy/app.jar
+          echo "=== 배포 완료 ==="
