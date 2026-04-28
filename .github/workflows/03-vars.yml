@@ -19,3 +19,10 @@ jobs:
       - name: Environment vars 출력
         run: |
           echo "URL: ${{ vars.API_URL }}"
+
+  use-vars2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository var 출력2
+        run: |
+          echo "App Name: ${{ vars.API_URL }}"
